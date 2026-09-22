@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# bot 运行器
+#
+#   ./run        前台运行（Ctrl-C 停）
+#   ./run -d     后台运行
+#
+# 崩了会自动拉起（隔 5 秒），但连续崩 5 次就放弃 —— 那说明是真出问题了，
+# 无脑重启只会把日志刷满、把 API 额度烧掉。
+
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+ROOT="$(cd .. && pwd)"
+
+if [ "${1:-}" = "-d" ]; then
+  shift
+  LOG="$ROOT/logs/bot.log"
+  mkdir -p "$ROOT/logs"
+  nohup "$0" "$@" >>"$LOG" 2>&1 &
+  echo "✔ bot 已在后台启动 (pid $!)"
+  echo "  看日志: tail -f $LOG"
+  exit 0
+fi
+
+fails=0
+while :; do
+  node feishu.mjs
+  code=$?
+  if [ "$code" -eq 0 ]; then
+    echo "· 正常退出，不再重启"
+    break
+  fi
+  fails=$((fails + 1))
+  if [ "$fails" -ge 5 ]; then
+    echo "✗ 连续崩了 $fails 次，放弃。检查上面的报错。"
+    exit 1
+  fi
+  echo "· 退出码 $code，5 秒后重启（第 $fails 次）"
+  sleep 5
+done

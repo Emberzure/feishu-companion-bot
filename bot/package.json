@@ -1,0 +1,8 @@
+{
+  "name": "feishu-companion-bot",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@larksuiteoapi/node-sdk": "^1.44.0"
+  }
+}

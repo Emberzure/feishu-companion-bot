@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# 停止 bot
+SERVICE="${BOT_SERVICE:-companion-bot}"
+systemctl --user stop "$SERVICE" 2>&1
+echo "✔ bot 已停"

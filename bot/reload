@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# 重启。改完人设或代码跑这个 —— 人设是启动时读一次的，不重启不生效。
+# 走 systemd 用户服务，所以关终端窗口不影响它。
+
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+
+SERVICE="${BOT_SERVICE:-companion-bot}"
+
+systemctl --user restart "$SERVICE"
+sleep 3
+
+if systemctl --user is-active --quiet "$SERVICE"; then
+  echo "✔ bot 已重启"
+  grep -E "\[人设\]|\[启动\]" ../logs/bot.log | tail -2 | sed 's/^/  /'
+else
+  echo "✗ 没起来。看这个："
+  echo "    journalctl --user -u $SERVICE -n 40"
+  exit 1
+fi

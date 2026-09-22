@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# 看状态
+SERVICE="${BOT_SERVICE:-companion-bot}"
+systemctl --user status "$SERVICE" --no-pager 2>&1 | head -12

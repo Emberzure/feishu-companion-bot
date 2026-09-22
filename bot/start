@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# 启动 bot（需要先按 README 装好 systemd 用户服务）
+SERVICE="${BOT_SERVICE:-companion-bot}"
+systemctl --user start "$SERVICE" 2>&1
+sleep 1
+systemctl --user is-active --quiet "$SERVICE" \
+  && echo "✔ bot 在跑了" \
+  || echo "✗ 没起来，看日志：journalctl --user -u $SERVICE -n 30"

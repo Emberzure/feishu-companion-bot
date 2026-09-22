@@ -1,0 +1,35 @@
+# systemd 用户服务模板
+#
+# 装它（在项目根目录跑）：
+#
+#   mkdir -p ~/.config/systemd/user
+#   sed "s|__PROJECT__|$PWD|g; s|__NODE__|$(command -v node)|g" \
+#     systemd/companion-bot.service > ~/.config/systemd/user/companion-bot.service
+#   systemctl --user daemon-reload
+#
+# 然后就能用 bot/start、bot/stop、bot/reload 了。
+#
+# 注意这不是系统服务（/etc/systemd/system），是【用户服务】——
+# 不需要 root，也不会在开机时自动起（除非你 systemctl --user enable）。
+
+[Unit]
+Description=AI companion bot (Feishu)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__PROJECT__/bot
+ExecStart=__NODE__ __PROJECT__/bot/feishu.mjs
+
+# 崩了自动拉起。比 nohup 靠谱：不受终端窗口影响，
+# 也不会因为桌面环境重启而被连带杀掉。
+Restart=on-failure
+RestartSec=5
+
+StandardOutput=append:__PROJECT__/logs/bot.log
+StandardError=append:__PROJECT__/logs/bot.log
+
+[Install]
+# 想要开机自启才执行：systemctl --user enable companion-bot
+WantedBy=default.target
