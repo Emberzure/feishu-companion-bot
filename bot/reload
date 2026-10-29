@@ -11,7 +11,7 @@ sleep 3
 
 if systemctl --user is-active --quiet "$SERVICE"; then
   echo "✔ bot 已重启"
-  grep -E "\[人设\]|\[启动\]" ../logs/bot.log | tail -2 | sed 's/^/  /'
+  grep -E "人设已载入|bot 启动" ../logs/bot.log | tail -2 | sed 's/^/  /'
 else
   echo "✗ 没起来。看这个："
   echo "    journalctl --user -u $SERVICE -n 40"
